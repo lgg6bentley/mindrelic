@@ -32,6 +32,9 @@ export default function SquidMemoryGame({ activeGame }: { activeGame?: string })
   const matchSoundRef = useRef<HTMLAudioElement>(null);
   const errorSoundRef = useRef<HTMLAudioElement>(null);
 
+  const [countdownActive, setCountdownActive] = useState(false);
+const [countdownValue, setCountdownValue] = useState(3);
+
   useEffect(() => {
     if (activeGame === 'memory-match') handleReset();
   }, [activeGame]);
@@ -111,40 +114,106 @@ export default function SquidMemoryGame({ activeGame }: { activeGame?: string })
       Squid Memory Match
     </h1>
 
-    {/* Difficulty Selector */}
-    <div className="space-y-2">
-      <p className="text-sm text-zinc-400">Choose your difficulty:</p>
-      <div className="flex justify-center gap-4">
-        {['Easy', 'Medium', 'Hard'].map(level => (
-          <button
-            key={level}
-            onClick={() => setDifficulty(level as Difficulty)}
-            className={`px-4 py-2 rounded border text-sm font-semibold transition ${
-              difficulty === level
-                ? 'bg-pink-600 text-white border-pink-400 shadow-md'
-                : 'bg-black text-zinc-400 border-zinc-600 hover:border-pink-500'
-            }`}
-          >
-            {level}
-          </button>
-        ))}
-      </div>
-    </div>
+    {/* Lore Intro */}
+<div className="space-y-4 mt-6 text-center">
+  <motion.p
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 1 }}
+    className="text-sm text-zinc-400 italic"
+  >
+    Choose your path. Each trait reveals a different memory trial. Only the worthy ascend.
+  </motion.p>
 
-    {/* Start Button */}
+  {/* Trait Selector Grid */}
+  <div className="grid grid-cols-3 gap-4">
+    {[
+      {
+        label: 'Logic',
+        color: 'blue',
+        traits: ['◯', '△', '□'],
+        lore: 'Precision and pattern. Match with reason.',
+      },
+      {
+        label: 'Danger',
+        color: 'red',
+        traits: ['💀', '🔺', '🟥'],
+        lore: 'Chaos and risk. Match under pressure.',
+      },
+      {
+        label: 'Crypto',
+        color: 'yellow',
+        traits: ['🪙', '₩', '🧠'],
+        lore: 'Value and volatility. Match with intuition.',
+      },
+    ].map(({ label, color, traits, lore }) => (
+      <motion.button
+        key={label}
+        onClick={() => setDifficulty(label as Difficulty)}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className={`border-2 rounded-lg p-4 text-sm font-bold shadow-md bg-black border-${color}-500 hover:border-pink-500 ${
+          difficulty === label
+            ? `shadow-[0_0_12px_#${color === 'red' ? 'ff0000' : color === 'blue' ? '00ccff' : 'ffd700'}]`
+            : ''
+        }`}
+      >
+        <div className={`text-xl mb-2 text-${color}-400`}>{label}</div>
+        <div className="flex justify-center gap-2 text-2xl mb-2">
+          {traits.map((t, i) => (
+            <span key={i}>{t}</span>
+          ))}
+        </div>
+        <p className="text-xs text-zinc-500 italic">{lore}</p>
+      </motion.button>
+    ))}
+  </div>
+</div>
 
+{/* Ceremonial Countdown Start Button */}
+{!startGame && !countdownActive && (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.8 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ duration: 0.8 }}
+    className="mt-8 flex flex-col items-center"
+  >
+    <motion.button
+      onClick={() => {
+        setCountdownActive(true);
+        setCountdownValue(3);
+        let count = 3;
+        const countdownInterval = setInterval(() => {
+          count -= 1;
+          setCountdownValue(count);
+          if (count === 0) {
+            clearInterval(countdownInterval);
+            setStartGame(true);
+            setStartTime(Date.now());
+            setCountdownActive(false);
+          }
+        }, 1000);
+      }}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      className="px-6 py-3 bg-gradient-to-r from-pink-600 to-red-600 text-white font-bold rounded-full shadow-lg border border-pink-400"
+    >
+      Begin the Ritual
+    </motion.button>
+  </motion.div>
+)}
 
-    {!startGame && (
-      <div className="flex justify-center mt-6">
-        <button
-          onClick={() => setStartGame(true)}
-          className="bg-pink-600 hover:bg-pink-700 text-white px-6 py-2 rounded-md border border-pink-400 text-sm shadow-md"
-        >
-          Start Game
-        </button>
-      </div>
-    )}
-
+{/* Dynamic Countdown Display */}
+{countdownActive && (
+  <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    transition={{ duration: 0.5 }}
+    className="mt-4 text-2xl font-bold text-pink-400 animate-pulse"
+  >
+    Memory trial begins in {countdownValue}...
+  </motion.div>
+)}
         {/* Card Grid */}
         {startGame && (
           <div className="relative">
