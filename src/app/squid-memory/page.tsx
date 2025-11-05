@@ -297,7 +297,7 @@ const [countdownValue, setCountdownValue] = useState(3);
 
       {/* Sound Effects */}
       <audio ref={matchSoundRef} src="/sounds/match.mp3" preload="auto" />
-      <audio ref={errorSoundRef} src="/sounds/error.mp3" preload="auto" />
+      <audio ref={errorSoundRef} src="/" preload="auto" />
     </main>
   );
 }
