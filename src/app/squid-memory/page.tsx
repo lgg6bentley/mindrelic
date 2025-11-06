@@ -31,42 +31,38 @@ interface CardProps {
 }
 
 const Card = ({ symbol, index, isFlipped, isMatched, onClick }: CardProps) => {
-  const rotation = isFlipped || isMatched ? 180 : 0;
-  
   return (
     <motion.button
       onClick={() => onClick(index)}
       className={`relative w-full aspect-square min-w-0 rounded-lg overflow-hidden cursor-pointer p-1 perspective-1000 ${
-        isMatched 
-        ? 'shadow-[0_0_15px_#00ffcc] pointer-events-none'
-        : 'hover:shadow-[0_0_10px_#ff00cc] transition-shadow duration-200'
+        isMatched
+          ? 'shadow-[0_0_15px_#00ffcc] pointer-events-none'
+          : 'hover:shadow-[0_0_10px_#ff00cc] transition-shadow duration-200'
       }`}
       disabled={isMatched}
-      style={{
-        transformStyle: 'preserve-3d',
-        transition: 'transform 0.6s',
-      }}
     >
       <motion.div
-        className="relative w-full h-full"
-        animate={{ rotateY: rotation }}
+        animate={{ rotateY: isFlipped || isMatched ? 180 : 0 }}
         transition={{ duration: 0.6 }}
+        className="relative w-full h-full"
         style={{ transformStyle: 'preserve-3d' }}
       >
         {/* Card Back */}
-        <div 
-          className="absolute inset-0 bg-zinc-800 border-2 border-pink-500 backface-hidden flex items-center justify-center rounded-lg"
+        <div
+          className="absolute inset-0 bg-zinc-800 border-2 border-pink-500 flex items-center justify-center rounded-lg"
+          style={{ backfaceVisibility: 'hidden' }}
         >
           <span className="text-2xl sm:text-3xl font-bold text-zinc-500">?</span>
         </div>
 
         {/* Card Face */}
-        <div 
-          className={`absolute inset-0 backface-hidden flex items-center justify-center rounded-lg transform rotateY-180 transition-all duration-300 ${
-            isMatched 
-            ? 'bg-green-700/80 border-green-400'
-            : 'bg-zinc-900 border-pink-400 shadow-[0_0_10px_#ff00cc]'
+        <div
+          className={`absolute inset-0 flex items-center justify-center rounded-lg transform rotate-y-180 transition-all duration-300 ${
+            isMatched
+              ? 'bg-green-700/80 border-green-400'
+              : 'bg-zinc-900 border-pink-400 shadow-[0_0_10px_#ff00cc]'
           }`}
+          style={{ backfaceVisibility: 'hidden' }}
         >
           <motion.span
             initial={{ scale: 0.5, opacity: 0 }}
@@ -81,6 +77,7 @@ const Card = ({ symbol, index, isFlipped, isMatched, onClick }: CardProps) => {
     </motion.button>
   );
 };
+
 
 // --- Main Component ---
 export default function SquidMemoryGame() {
