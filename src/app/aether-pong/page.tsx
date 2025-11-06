@@ -53,7 +53,7 @@ const AetherPong: React.FC = () => {
   const [message, setMessage] = useState('Press START to enter the Aether Grid.');
 
   // Ref for the game loop to manage animation frame
-  const animationRef = useRef<number>();
+  const animationRef = useRef<number | undefined>(undefined);
   const lastTimeRef = useRef<number>(0);
   const gameAreaRef = useRef<HTMLDivElement>(null);
 
